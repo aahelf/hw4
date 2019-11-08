@@ -1,9 +1,24 @@
 {% extends 'base.html' %}
 
 {% block body %}
+{% if brands %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Brand Name</th>
+            </tr>
+        </thead>
 
-	<h2> This is my Flask server! </h2>
-
-	<img src="{{ url_for('static', filename='images/flask.jpg') }}" />
+        <tbody>
+            {% for row in brands %}
+            <tr>
+                <td> {{ row.brandID }}</td>
+                <td> {{ row.brand }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
 
 {% endblock %}
