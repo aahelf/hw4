@@ -25,6 +25,7 @@
 
     {{ form.brand.label }} {{ form.brand }}
 
+    <input type="submit" formaction="{{url_for('update_brand', brandID=form.brandID)}}" value="Update">
     <input type="submit" formaction="{{url_for('delete_brand', brandID=form.brandID)}}" value="Delete">
 
 

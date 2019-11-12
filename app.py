@@ -38,7 +38,7 @@ def index():
     all_brands = aahelf_brandsapp.query.all()
     return render_template('index.html', brands=all_brands, pageTitle='Adam\'s Brands')
 
-@app.route('/add_brand', methods=['GET', 'POST'])
+@app.route('/brand/new', methods=['GET', 'POST'])
 def add_brand():
     form = BrandForm()
     if form.validate_on_submit():
@@ -53,6 +53,20 @@ def add_brand():
 def brand(brandID):
     brand = aahelf_brandsapp.query.get_or_404(brandID)
     return render_template('brand.html', form=brand, pageTitle='Brand Details')
+
+@app.route('/brand/<int:brandID>/update', methods=['GET','POST'])
+def update_brand(brandID):
+    brandq = aahelf_brandsapp.query.get_or_404(brandID)
+    form = BrandForm()
+    if form.validate_on_submit():
+        brandq.brand = form.brand.data
+        db.session.commit()
+        flash('Your brand has been updated.')
+        return redirect(url_for('brand', brandID=brandq.brandID))
+    #elif request.method == 'GET':
+    form.brand.data = brandq.brand
+    return render_template('add_brand.html', form=form, pageTitle='Update Post',
+                            legend="Update A Brand")
 
 @app.route('/brand/<int:brandID>/delete', methods=['POST'])
 def delete_brand(brandID):

@@ -1,6 +1,21 @@
 {% extends 'base.html' %}
 
 {% block body %}
+<p><a href="{{ url_for('add_brand')}}"> Add a new brand</a></p>
+
+{% with messages = get_flashed_messages() %}
+ {% if messages %}
+ <div class="alert alert-warning alert-dismissible fade show" role="alert" id="flash">
+   {% for message in messages %}
+   <strong>Alert!</strong> {{ message }}
+   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+     <span aria-hidden="true">&times;</span>
+   </button>
+   {% endfor %}
+   {% endif %}
+   {% endwith %}
+ </div>
+
 {% if brands %}
     <table>
         <thead>
@@ -15,10 +30,16 @@
             <tr>
                 <td> {{ row.brandID }}</td>
                 <td> {{ row.brand }}</td>
+
+                    <td>
+          <form action="{{ url_for('brand', brandID=row.brandID) }}" method="POST">
+            <input type="submit" value="Details" class="btn btn-info" />
+          </form>
+        </td>
+
             </tr>
             {% endfor %}
         </tbody>
     </table>
 {% endif %}
-
 {% endblock %}
