@@ -1,26 +1,21 @@
 {% extends 'base.html' %}
 
 {% block body %}
+
+<form method="POST">
+  <input type = "text" autofocus = "autofocus" name = "search_string">
+  <input type = "submit" formaction = "/search" value = "Search">
+</form>
+
+
 <p><a href="{{ url_for('add_brand')}}"> Add a new brand</a></p>
 
-{% with messages = get_flashed_messages() %}
- {% if messages %}
- <div class="alert alert-warning alert-dismissible fade show" role="alert" id="flash">
-   {% for message in messages %}
-   <strong>Alert!</strong> {{ message }}
-   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-     <span aria-hidden="true">&times;</span>
-   </button>
-   {% endfor %}
-   {% endif %}
-   {% endwith %}
- </div>
 
+    <h3>{{ legend }}</h3>
 {% if brands %}
     <table>
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Brand Name</th>
             </tr>
         </thead>
@@ -28,11 +23,10 @@
         <tbody>
             {% for row in brands %}
             <tr>
-                <td> {{ row.brandID }}</td>
                 <td> {{ row.brand }}</td>
 
                     <td>
-          <form action="{{ url_for('brand', brandID=row.brandID) }}" method="POST">
+          <form action="{{ url_for('get_brand', brandID=row.brandID) }}" method="POST">
             <input type="submit" value="Details" class="btn btn-info" />
           </form>
         </td>

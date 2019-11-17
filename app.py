@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import render_template, redirect, request, flash, url_for
 from flask_wtf import FlaskForm
-from wtforms import StringField
+from wtforms import StringField, SubmitField, IntegerField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 import pymysql
@@ -28,17 +28,34 @@ class aahelf_brandsapp(db.Model):
     brand = db.Column(db.String(255))
 
     def __repr__(self):
-        return "id: {0} | Brand name: {1}".format(self.id, self.brand)
+        return "Brand name: {0}".format(self.brand)
 
 class BrandForm(FlaskForm):
-    brand = StringField('Brand Name:', validators=[DataRequired()])
+   brandID = IntegerField('Brand ID:', )
+   brand = StringField('Brand Name:', validators=[DataRequired()])
 
 @app.route('/')
 def index():
     all_brands = aahelf_brandsapp.query.all()
     return render_template('index.html', brands=all_brands, pageTitle='Adam\'s Brands')
 
-@app.route('/brand/new', methods=['GET', 'POST'])
+@app.route('/search', methods=['GET','POST'])
+def search():
+    if request.method == 'POST':
+        print('post method')
+        form = request.form
+        search_value = form['search_string']
+        print(search_value)
+        search = "%{0}%".format(search_value)
+        print(search)
+        results = aahelf_brandsapp.query.filter(aahelf_brandsapp.brand.like(search)).all()
+        print(results)
+        return render_template('index.html', brands=results, pageTitle='Adam\'s Brands', legend="Search Results")
+    else:
+        return redirect('/')
+
+
+@app.route('/add_brand', methods=['GET', 'POST'])
 def add_brand():
     form = BrandForm()
     if form.validate_on_submit():
@@ -50,22 +67,25 @@ def add_brand():
     return render_template('add_brand.html', form=form, pageTitle='Add A New Brand')    
 
 @app.route('/brand/<int:brandID>', methods=['GET','POST'])
-def brand(brandID):
+def get_brand(brandID):
     brand = aahelf_brandsapp.query.get_or_404(brandID)
-    return render_template('brand.html', form=brand, pageTitle='Brand Details')
+    return render_template('brand.html', form=brand, pageTitle='Brand Details', 
+                            legend="Brand deatils")
 
 @app.route('/brand/<int:brandID>/update', methods=['GET','POST'])
 def update_brand(brandID):
-    brandq = aahelf_brandsapp.query.get_or_404(brandID)
+    brand = aahelf_brandsapp.query.get_or_404(brandID)
     form = BrandForm()
+    
     if form.validate_on_submit():
-        brandq.brand = form.brand.data
+        brand.brand = form.brand.data
         db.session.commit()
         flash('Your brand has been updated.')
-        return redirect(url_for('brand', brandID=brandq.brandID))
+        return redirect(url_for('get_brand', brandID=brand.brandID))
     #elif request.method == 'GET':
-    form.brand.data = brandq.brand
-    return render_template('add_brand.html', form=form, pageTitle='Update Post',
+    form.brandID.data = brand.brandID
+    form.brand.data = brand.brand
+    return render_template('update_brand.html', form=form, pageTitle='Update Brand',
                             legend="Update A Brand")
 
 @app.route('/brand/<int:brandID>/delete', methods=['POST'])

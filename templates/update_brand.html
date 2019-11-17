@@ -3,13 +3,14 @@
 <div>
 
   <h3>{{ legend }}</h3>
-  
-  <form method="POST" action="{{ url_for('add_brand') }}">
+ 
+  <form method="POST" action="">
 
     {{ form.csrf_token }}
+    {{ form.brandID.label }} {{ form.brandID(size=5, readonly=true) }}
     {{ form.brand.label }} {{ form.brand(size=20) }}
 
-    <input type="submit" value="Add Brand">
+    <input type="submit" value="Save">
 
   </form>
 
